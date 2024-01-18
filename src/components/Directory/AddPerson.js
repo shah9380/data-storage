@@ -41,14 +41,13 @@ const AddPerson = () => {
     }
   };
 
-  useEffect(() => {
-    // Retrieve saved information from local storage
-    const storedInfo = JSON.parse(localStorage.getItem("savedInfo")) || [];
-    setSavedInfo(storedInfo);
-  }, []);
-
   const handleSave = () => {
-    setSavedInfo([...savedInfo, formData]);
+    const formattedFormData = {
+      ...formData,
+      dob: formData.dob ? new Date(formData.dob).toLocaleDateString() : "",
+    };
+  
+    setSavedInfo([...savedInfo, formattedFormData]);
     setFormData({
       name: "",
       dob: "",
@@ -56,9 +55,11 @@ const AddPerson = () => {
       mobile: "",
       age: 0,
     });
+  
     // Update local storage after saving
-    localStorage.setItem("savedInfo", JSON.stringify([...savedInfo, formData]));
+    localStorage.setItem("savedInfo", JSON.stringify([...savedInfo, formattedFormData]));
   };
+  
 
   const handleDelete = (index) => {
     const updatedInfo = [...savedInfo];
@@ -67,6 +68,17 @@ const AddPerson = () => {
     // Update local storage after deletion
     localStorage.setItem("savedInfo", JSON.stringify(updatedInfo));
   };
+
+  useEffect(() => {
+    // Retrieve saved information from local storage
+    const storedInfo = JSON.parse(localStorage.getItem("savedInfo")) || [];
+    const formattedInfo = storedInfo.map((info) => ({
+      ...info,
+      dob: new Date(info.dob).toLocaleDateString(),
+    }));
+
+    setSavedInfo(formattedInfo);
+  }, []);
 
   return (
     <section className="border border-black min-h-[70vh] max-w-[1200px] mx-auto">
@@ -117,7 +129,6 @@ const AddPerson = () => {
             required
             className="border border-black mx-2 grow"
             name="dob"
-            value={formData.dob || ''}
             onChange={handleInputChange}
             onBlur={handleInputChange}
           />
@@ -168,6 +179,7 @@ const AddPerson = () => {
 };
 
 export default AddPerson;
+
 
 
 
